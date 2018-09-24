@@ -13,10 +13,22 @@ img_find = cv2.imread('E:\\Git\\opencv\\six\\resource\\picture_find.JPG', cv2.IM
 orb = cv2.ORB_create()
 kp_orign, des_orign = orb.detectAndCompute(img_orign, None)
 kp_find, des_find = orb.detectAndCompute(img_find, None)
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck = True)
+#暴力匹配模式
+# bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck = True)
 #match对象（distance, imgIdx, queryIdx, trainIdx）
 #返回match的list
-matches = bf.match(des_find, des_orign)
-matches = sorted(matches, key = lambda x:x.distance)
-img_result = cv2.drawMatches(img_find, kp_find, img_orign, kp_orign, matches[:80], img_orign, flags=2)
+# matches = bf.match(des_find, des_orign)
+#matches = sorted(matches, key = lambda x:x.distance)
+#img_result = cv2.drawMatches(img_find, kp_find, img_orign, kp_orign, matches[:80], img_orign, flags=2)
+#k-最邻近匹配模式
+bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck = False)
+#返回的matchs中，每个元素是由k个matche对象组成的集合，k为匹配到最近的k个元素
+matches = bf.knnMatch(des_find, des_orign, k=2)
+#过滤满足匹配到最近像素点与次近像素点间的比例小于一定阈值的像素点，及保留特征较为突出的关键点
+matchesMask = [[0, 0] for i in range(len(matches))]
+for i,(m, n) in enumerate(matches):
+    if m.distance < 0.7 * n.distance:
+        matchesMask[i] = [1, 0]
+img_result = cv2.drawMatchesKnn(img_find, kp_find, img_orign, kp_orign, matches, img_orign, flags=2, matchesMask=matchesMask)
+
 plt.imshow(img_result),plt.show()
