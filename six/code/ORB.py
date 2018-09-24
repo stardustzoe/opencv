@@ -29,6 +29,22 @@ matchesMask = [[0, 0] for i in range(len(matches))]
 for i,(m, n) in enumerate(matches):
     if m.distance < 0.7 * n.distance:
         matchesMask[i] = [1, 0]
-img_result = cv2.drawMatchesKnn(img_find, kp_find, img_orign, kp_orign, matches, img_orign, flags=2, matchesMask=matchesMask)
 
+# IMG1	第一个源图像。
+# keypoints1	来自第一个源图像的关键点。
+# IMG2	第二个源图像。
+# keypoints2	来自第二个源图像的关键点。
+# matches1to2	匹配从第一个图像到第二个图像，这意味着keypoints1 [i]在关键点2 [匹配[i]]中具有对应点。
+# outImg	输出图像。其内容取决于定义输出图像中绘制内容的标志值。请参阅下面的可能标志位值。
+# MatchColor	匹配的颜色（线和连接的关键点）。如果matchColor == Scalar :: all（-1），则颜色随机生成。
+# singlePointColor	单个关键点（圆圈）的颜色，这意味着关键点没有匹配项。如果singlePointColor == Scalar :: all（-1），则颜色随机生成。
+# matchesMask	掩码确定绘制了哪些匹配。如果掩码为空，则绘制所有匹配项。
+# flag	标志设置绘图功能。可能的标志位值由DrawMatchesFlags定义。
+# 枚举  	{
+#   DEFAULT = 0，将创建输出图像矩阵（Mat :: create），即可以重用输出图像的现有存储器。将绘制两个源图像，匹配和单个关键点。对于每个关键点，仅绘制中心点（没有关键点大小和方向的关键点周围的圆圈）。
+#   DRAW_OVER_OUTIMG = 1，不会创建输出图像矩阵（Mat :: create）。将在输出图像的现有内容上绘制匹配。
+#   NOT_DRAW_SINGLE_POINTS = 2，不会绘制单个关键点。
+#   DRAW_RICH_KEYPOINTS = 4 对于每个关键点，将绘制具有关键点大小和方向的关键点周围的圆。
+# }
+img_result = cv2.drawMatchesKnn(img_find, kp_find, img_orign, kp_orign, matches, img_orign, flags=2, matchesMask=matchesMask)
 plt.imshow(img_result),plt.show()
